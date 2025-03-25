@@ -56,14 +56,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://your-frontend-url.onrailway.app",  # Will update after deploying frontend
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://your-frontend-url.onrailway.app",
-]
-
 ROOT_URLCONF = 'backend.urls'
 
 
@@ -98,10 +90,6 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-import os
-import dj_database_url
-
-USE_SQLITE = os.getenv('USE_SQLITE', 'False') == 'True'  # Default is False (Use PostgreSQL)
 
 if USE_SQLITE:
     DATABASES = {
@@ -112,9 +100,15 @@ if USE_SQLITE:
     }
 else:
     DATABASES = {
-        'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME', 'elearning_db'),
+            'USER': os.getenv('DB_USER', 'elearning_user'),
+            'PASSWORD': os.getenv('DB_PASSWORD', 'Umarfaruq123'),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
     }
-
 
 
 DATABASE_ROUTERS = ['backend.db_router.DatabaseRouter']
@@ -205,7 +199,3 @@ CSRF_TRUSTED_ORIGINS = [
 
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["authorization", "content-type", "x-csrftoken"]
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
