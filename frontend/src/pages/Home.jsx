@@ -3,7 +3,7 @@ import React from "react";
 const Home = () => {
   return (
     <div className="text-center max-w-3xl mx-auto bg-white shadow-md p-8 rounded-lg">
-      <h1 className="text-4xl font-bold text-green-700">Welcome to EduPlatform</h1>
+      <h1 className="text-4xl font-bold text-green-700">Welcome to LearnSphere</h1>
       <p className="text-gray-600 mt-4">
         A modern e-learning platform designed for students and teachers to collaborate effectively.
       </p>

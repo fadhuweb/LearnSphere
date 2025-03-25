@@ -26,7 +26,7 @@ function App() {
       {/* Navigation Bar */}
       <nav className="bg-green-600 text-white shadow-md p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">EduPlatform</h1>
+          <h1 className="text-2xl font-bold">LearnSphere</h1>
           <div className="space-x-6">
             <Link to="/" className="hover:text-gray-300 transition">Home</Link>
             {!user ? (
@@ -75,7 +75,7 @@ function App() {
 
       {/* Footer */}
       <footer className="bg-green-700 text-white text-center p-3">
-        &copy; {new Date().getFullYear()} EduPlatform. All Rights Reserved.
+        &copy; {new Date().getFullYear()}LearnSphere. All Rights Reserved.
       </footer>
 
       {/* Add ToastContainer at the root level */}
