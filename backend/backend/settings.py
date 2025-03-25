@@ -200,6 +200,7 @@ CORS_ALLOW_CREDENTIALS = True  # Allows sending authentication credentials (cook
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://learn-sphere-six.vercel.app"
 ]
 
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
