@@ -1,4 +1,4 @@
-# IoT Course Management System
+# Course Management System
 
 🚀 A full-stack  Course Management System that allows Teachers to manage courses, create topics, add lessons (PDFs, videos, links, and text), add quizzes and track student progress.
 
@@ -34,9 +34,8 @@
 
 ### ⿡ Clone the Repository
 
-```bash
-
-```
+https://github.com/fadhuweb/LearnSphere.git
+cd Learnsphere
 
 ### ⿢ Backend Setup
 
