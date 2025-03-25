@@ -26,11 +26,7 @@ SECRET_KEY = 'django-insecure-4bnetmm!3379q87=!+foh+_q*u#1g!b5iigu+5z_m_blc7vw6l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "learnsphere-7.onrender.com",
-    "127.0.0.1",  # Keep this if you're also running locally
-    "localhost",
-]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -191,8 +187,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Allow React frontend
-    "http://127.0.0.1:5173",
-    "https://learn-sphere-six.vercel.app"  # Allow Vercel frontend
+    "http://127.0.0.1:5173",  # Alternative local address
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Allows sending authentication credentials (cookies, tokens)
@@ -200,7 +195,6 @@ CORS_ALLOW_CREDENTIALS = True  # Allows sending authentication credentials (cook
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://learn-sphere-six.vercel.app"
 ]
 
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
