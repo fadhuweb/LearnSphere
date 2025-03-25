@@ -191,7 +191,8 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # Allow React frontend
-    "http://127.0.0.1:5173",  # Alternative local address
+    "http://127.0.0.1:5173",
+    "https://learn-sphere-six.vercel.app"  # Allow Vercel frontend
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Allows sending authentication credentials (cookies, tokens)
