@@ -33,11 +33,11 @@
 ## 🛠 Setup Instructions
 
 ### ⿡ Clone the Repository
-
-https://github.com/fadhuweb/LearnSphere.git
+```bash
+git clone https://github.com/fadhuweb/LearnSphere.git
 
 cd Learnsphere
-
+```
 ### ⿢ Backend Setup
 
 Navigate to the backend directory and set up a virtual environment.
