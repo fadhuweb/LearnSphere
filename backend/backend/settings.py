@@ -27,10 +27,12 @@ SECRET_KEY = 'django-insecure-4bnetmm!3379q87=!+foh+_q*u#1g!b5iigu+5z_m_blc7vw6l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['LearnSphere-8.onrender.com']
 
 
 # Application definition
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
