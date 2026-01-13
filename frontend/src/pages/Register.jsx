@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../api";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash, FaUser, FaEnvelope, FaLock, FaUserGraduate, FaChevronRight, FaCheckCircle, FaCircle } from "react-icons/fa";
 
@@ -34,7 +35,7 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/auth/register/", userData);
+      const res = await axios.post(`${API_URL}/auth/register/`, userData);
       const { message } = res.data;
       setSuccess(message || "Account created successfully!");
       setError(null);

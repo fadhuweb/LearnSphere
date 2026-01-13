@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../api";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/admin/users/");
+      const response = await axios.get(`${API_URL}/admin/users/`);
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -19,7 +20,7 @@ const ManageUsers = () => {
 
   const handleAction = async (userId, action) => {
     try {
-      await axios.post(`http://127.0.0.1:8000/api/admin/users/${userId}/${action}/`);
+      await axios.post(`${API_URL}/admin/users/${userId}/${action}/`);
       fetchUsers(); // Refresh user list
     } catch (error) {
       console.error(`Error performing ${action} on user ${userId}:`, error);

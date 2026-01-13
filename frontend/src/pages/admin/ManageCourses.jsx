@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../api";
 
 const ManageCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -16,7 +17,7 @@ const ManageCourses = () => {
   // Fetch all courses
   const fetchCourses = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/courses/");
+      const response = await axios.get(`${API_URL}/courses/`);
       setCourses(response.data);
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -26,7 +27,7 @@ const ManageCourses = () => {
   // Fetch all teachers (only users with role 'teacher')
   const fetchTeachers = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/admin/users/");
+      const response = await axios.get(`${API_URL}/admin/users/`);
       const teacherList = response.data.filter((user) => user.role === "teacher");
       setTeachers(teacherList);
     } catch (error) {
@@ -38,7 +39,7 @@ const ManageCourses = () => {
   const handleCreateCourse = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://127.0.0.1:8000/api/courses/create/", newCourse);
+      await axios.post(`${API_URL}/courses/create/`, newCourse);
       fetchCourses(); // Refresh course list
       setNewCourse({ title: "", description: "" });
     } catch (error) {
@@ -54,7 +55,7 @@ const ManageCourses = () => {
       return;
     }
     try {
-      await axios.post(`http://127.0.0.1:8000/api/courses/${selectedCourse}/assign-teacher/`, {
+      await axios.post(`${API_URL}/courses/${selectedCourse}/assign-teacher/`, {
         teacher_id: selectedTeacher,
       });
       alert("Teacher assigned successfully!");

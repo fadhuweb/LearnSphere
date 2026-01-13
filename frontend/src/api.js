@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Base API URL
 // Use the current origin in production, or fallback to local dev URL
-const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+export const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? "http://127.0.0.1:8000/api"
   : `${window.location.origin}/api`;
 

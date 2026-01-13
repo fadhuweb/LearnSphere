@@ -2,6 +2,7 @@ import React, { useState, useContext, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { API_URL } from '../api';
 import { FaCamera, FaUser, FaEnvelope, FaIdBadge } from 'react-icons/fa';
 
 const Profile = () => {
@@ -32,7 +33,7 @@ const Profile = () => {
             const token = localStorage.getItem('token');
             // Don't set Content-Type manually - axios will set it with the correct boundary
             const response = await axios.patch(
-                'http://127.0.0.1:8000/api/auth/profile/',
+                `${API_URL}/auth/profile/`,
                 formData,
                 {
                     headers: {

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../api";
 
 // Create AuthContext
 export const AuthContext = createContext();
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserProfile = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/api/auth/profile/", {
+      const res = await axios.get(`${API_URL}/auth/profile/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -43,12 +44,12 @@ export const AuthProvider = ({ children }) => {
   // ✅ Login function - Always fetch latest user status
   const login = async (credentials) => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/api/auth/login/", credentials);
+      const res = await axios.post(`${API_URL}/auth/login/`, credentials);
       localStorage.setItem("token", res.data.access);
       setToken(res.data.access);
 
       // ✅ Fetch user profile after login
-      const profileRes = await axios.get("http://127.0.0.1:8000/api/auth/profile/", {
+      const profileRes = await axios.get(`${API_URL}/auth/profile/`, {
         headers: { Authorization: `Bearer ${res.data.access}` },
       });
 
