@@ -210,8 +210,18 @@ class PasswordResetView(APIView):
         except User.DoesNotExist:
             return Response({"error": "No user found with this email address."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            logger.error(f"Password reset error: {str(e)}", exc_info=True)
-            return Response({"error": f"Internal server error: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"Password reset error for email {email}: {str(e)}", exc_info=True)
+            # Check for common SMTP errors to give cleaner feedback
+            error_msg = str(e)
+            if "authentication failed" in error_msg.lower():
+                error_msg = "Mail server authentication failed. Please check your App Password."
+            elif "connection refused" in error_msg.lower():
+                error_msg = "Could not connect to the mail server. Please check SMTP settings."
+            
+            return Response({
+                "error": f"Failed to send reset email: {error_msg}",
+                "detail": "Please check the server logs for more information."
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PasswordResetConfirmView(APIView):
     """View to confirm password reset with a token."""
