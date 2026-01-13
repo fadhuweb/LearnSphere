@@ -46,5 +46,9 @@ RUN python manage.py collectstatic --noinput
 # Expose port
 EXPOSE 8000
 
-# Run gunicorn
-CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Make the start script executable and fix Windows line endings
+RUN chmod +x ./start.sh && \
+    sed -i 's/\r$//' ./start.sh
+
+# Run the startup script
+CMD ["./start.sh"]
