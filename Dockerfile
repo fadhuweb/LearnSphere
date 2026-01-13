@@ -1,8 +1,9 @@
 # --- Stage 1: Build the Frontend ---
-FROM node:20-alpine AS frontend-builder
+FROM node:20 AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
-RUN npm install
+# Using legacy-peer-deps to ignore potential dependency conflicts in CI
+RUN npm install --legacy-peer-deps
 COPY frontend/ .
 RUN npm run build
 
