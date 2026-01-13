@@ -6,7 +6,7 @@ from django.views.static import serve
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('learnsphere-management/', admin.site.urls),  # Secret admin URL
     path('api/', include('api.urls')),
     
     # Static and Media files
