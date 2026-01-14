@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { FaChalkboardTeacher, FaUsers, FaBook } from 'react-icons/fa';
+import { FaChalkboardTeacher, FaUsers, FaBook, FaSearch, FaChevronRight, FaGraduationCap } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const BrowseCourses = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
@@ -29,10 +30,10 @@ const BrowseCourses = () => {
       await api.student.enrollInCourse(courseId);
       // Refresh the course list
       fetchAvailableCourses();
-      alert('Successfully enrolled in the course!');
+      toast.success('🎉 Successfully enrolled in the course!');
     } catch (err) {
       console.error('Error enrolling:', err);
-      alert('Failed to enroll in the course. Please try again.');
+      toast.error('Failed to enroll. Please try again.');
     }
   };
 
@@ -43,96 +44,119 @@ const BrowseCourses = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading courses...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-sm text-center">
-          <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Error</h2>
-          <p className="text-gray-600">{error}</p>
-          <button
-            onClick={fetchAvailableCourses}
-            className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-          >
-            Try Again
-          </button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="relative">
+          <div className="w-20 h-20 border-4 border-green-100 rounded-full"></div>
+          <div className="w-20 h-20 border-4 border-green-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+          <p className="mt-6 text-gray-500 font-bold uppercase tracking-widest text-[10px] text-center">Loading Knowledge...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-green-700 mb-4 md:mb-0">Available Courses</h2>
-          <div className="w-full md:w-1/3">
-            <input
-              type="text"
-              placeholder="Search courses..."
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+    <div className="min-h-screen bg-gray-50 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px]">
+      {/* Premium Header Section */}
+      <div className="bg-white border-b border-gray-100 relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-green-50 rounded-full blur-3xl opacity-50"></div>
+        <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="bg-green-100 text-green-700 p-2 rounded-xl">
+                  <FaGraduationCap size={24} />
+                </span>
+                <span className="text-gray-400 font-black uppercase tracking-[0.2em] text-[10px]">Student Center</span>
+              </div>
+              <h1 className="text-5xl font-black text-gray-900 tracking-tight leading-none mb-4">
+                Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-700">Courses</span>
+              </h1>
+              <p className="text-gray-500 text-lg max-w-xl font-medium">
+                Master new skills with our industry-leading courses. Find the perfect path for your learning journey today.
+              </p>
+            </div>
+
+            <div className="relative group w-full lg:w-96">
+              <FaSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="Search by title or topic..."
+                className="w-full pl-14 pr-6 py-5 bg-gray-50 border-2 border-transparent focus:border-green-500 outline-none rounded-[2rem] font-bold text-gray-700 transition-all shadow-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         {filteredCourses.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <FaBook className="text-4xl text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No Courses Found</h3>
-            <p className="text-gray-600">
-              {searchQuery
-                ? "No courses match your search criteria. Try a different search term."
-                : "There are no available courses at the moment. Check back later!"}
-            </p>
+          <div className="bg-white rounded-[2.5rem] shadow-sm border-2 border-dashed border-gray-100 p-20 text-center">
+            <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <FaBook className="text-3xl text-gray-300" />
+            </div>
+            <h3 className="text-2xl font-black text-gray-900 mb-2">No results found</h3>
+            <p className="text-gray-500 font-medium">We couldn't find any courses matching your search. Try a broader term?</p>
+            <button
+              onClick={() => setSearchQuery('')}
+              className="mt-6 text-green-600 font-black uppercase tracking-widest text-[10px] hover:underline"
+            >
+              Clear Search
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCourses.map((course) => (
-              <div key={course.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-gray-800">{course.title}</h3>
-                  <p className="text-gray-600 mb-4">{course.description}</p>
+              <div
+                key={course.id}
+                className="group bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 flex flex-col h-full"
+              >
+                {/* Course Header Decoration */}
+                <div className="h-32 bg-gradient-to-br from-green-400 to-green-600 relative overflow-hidden p-6 flex flex-col justify-end">
+                  <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full decoration-none"></div>
+                  <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-32 h-32 bg-black opacity-5 rounded-full decoration-none"></div>
+                  <span className="relative z-10 bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase self-start">
+                    {course.topics_count} Topics
+                  </span>
+                </div>
 
-                  <div className="flex items-center text-sm text-gray-500 mb-4">
-                    <div className="flex items-center mr-4">
-                      <FaChalkboardTeacher className="mr-2" />
-                      <span>{course.teacher?.name || 'No instructor assigned'}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <FaUsers className="mr-2" />
-                      <span>{course.enrolled_students} students</span>
-                    </div>
-                  </div>
+                <div className="p-8 flex flex-col flex-grow">
+                  <h3 className="text-2xl font-black text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
+                    {course.title}
+                  </h3>
+                  <p className="text-gray-500 font-medium text-sm line-clamp-3 mb-6 flex-grow">
+                    {course.description}
+                  </p>
 
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <div className="flex items-center mr-4">
-                      <FaBook className="mr-2" />
-                      <span>{course.topics_count} topics</span>
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center gap-3 text-sm text-gray-600 bg-gray-50 p-3 rounded-2xl">
+                      <div className="bg-white p-2 rounded-lg shadow-sm text-green-500">
+                        <FaChalkboardTeacher />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-none mb-1">Instructor</p>
+                        <p className="font-bold">{course.teacher?.name || 'Academic Team'}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                      <span>{course.quiz_count || 0} quizzes</span>
+
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
+                        <FaUsers className="text-green-500 opacity-70" />
+                        <span>{course.enrolled_students || 0} LearnSphere Students</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                        <span>{course.quiz_count || 0} Quizzes</span>
+                      </div>
                     </div>
                   </div>
 
                   <button
                     onClick={() => handleEnroll(course.id)}
-                    className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-green-600 active:scale-95 transition-all"
                   >
-                    Enroll Now
+                    Enroll Now <FaChevronRight size={10} />
                   </button>
                 </div>
               </div>
