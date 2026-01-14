@@ -71,7 +71,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'is_suspended', 'avatar']
+        fields = ['id', 'username', 'email', 'role', 'is_suspended', 'avatar', 'security_question', 'security_answer']
+        extra_kwargs = {
+            'security_answer': {'write_only': True}
+        }
     
     def get_avatar(self, obj):
         if obj.avatar:

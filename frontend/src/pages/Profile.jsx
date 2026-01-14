@@ -11,6 +11,8 @@ const Profile = () => {
     const [avatar, setAvatar] = useState(null);
     const [preview, setPreview] = useState(user?.avatar || null);
     const [loading, setLoading] = useState(false);
+    const [securityQuestion, setSecurityQuestion] = useState(user?.security_question || '');
+    const [securityAnswer, setSecurityAnswer] = useState('');
     const fileInputRef = useRef(null);
 
     const handleFileChange = (e) => {
@@ -23,15 +25,21 @@ const Profile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!avatar) return;
 
         const formData = new FormData();
-        formData.append('avatar', avatar);
+        if (avatar) {
+            formData.append('avatar', avatar);
+        }
+
+        // Add security question/answer if provided
+        if (securityQuestion) formData.append('security_question', securityQuestion);
+        if (securityAnswer) formData.append('security_answer', securityAnswer);
+
+        if (!avatar && !securityQuestion && !securityAnswer) return;
 
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            // Don't set Content-Type manually - axios will set it with the correct boundary
             const response = await axios.patch(
                 `${API_URL}/auth/profile/`,
                 formData,
@@ -43,15 +51,14 @@ const Profile = () => {
             );
 
             toast.success('Profile updated successfully!');
-            // Ideally update context here. 
-            // Since we can't easily trigger context update without a reload function:
+            setSecurityAnswer(''); // Clear answer field
+
             setTimeout(() => {
                 window.location.reload();
             }, 1000);
 
         } catch (error) {
             console.error('Error updating profile:', error);
-            console.error('Error response:', error.response?.data);
             toast.error(error.response?.data?.error || 'Failed to update profile.');
         } finally {
             setLoading(false);
@@ -121,17 +128,42 @@ const Profile = () => {
                             </div>
                         </div>
 
-                        {avatar && (
-                            <div className="mt-8">
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={loading}
-                                    className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                                >
-                                    {loading ? 'Uploading...' : 'Save Changes'}
-                                </button>
+                        <div className="mt-8 border-t pt-6">
+                            <h3 className="text-sm font-semibold text-gray-900 mb-4">Security Settings</h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs text-gray-500 mb-1">Security Question</label>
+                                    <input
+                                        type="text"
+                                        placeholder="e.g., What was your first pet's name?"
+                                        value={securityQuestion}
+                                        onChange={(e) => setSecurityQuestion(e.target.value)}
+                                        className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-gray-500 mb-1">Security Answer</label>
+                                    <input
+                                        type="password"
+                                        placeholder="Keep it secret, keep it safe"
+                                        value={securityAnswer}
+                                        onChange={(e) => setSecurityAnswer(e.target.value)}
+                                        className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-400">Used for password recovery if you forget your password.</p>
+                                </div>
                             </div>
-                        )}
+                        </div>
+
+                        <div className="mt-8">
+                            <button
+                                onClick={handleSubmit}
+                                disabled={loading || (!avatar && !securityQuestion && !securityAnswer)}
+                                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading || (!avatar && !securityQuestion && !securityAnswer) ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            >
+                                {loading ? 'Saving...' : 'Save All Changes'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

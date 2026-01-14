@@ -3,34 +3,45 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 
 const ForgotPassword = () => {
+    const [step, setStep] = useState(1); // 1: Email, 2: Security Question
     const [email, setEmail] = useState("");
+    const [question, setQuestion] = useState("");
+    const [answer, setAnswer] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleEmailSubmit = async (e) => {
         e.preventDefault();
-
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setError("Please enter a valid email address.");
-            return;
-        }
-
         setLoading(true);
         setError("");
-        setMessage("");
 
         try {
-            const response = await api.auth.passwordReset(email);
-            setMessage(response.data.message);
-            setError("");
+            const response = await api.auth.getSecurityQuestion(email);
+            setQuestion(response.data.question);
+            setStep(2);
         } catch (err) {
-            console.error("DEBUG: Password Reset Failed", err);
-            const msg = err.response?.data?.error || err.message || "An error occurred. Please try again.";
-            setError(msg);
+            console.error("DEBUG: Failed to get security question", err);
+            setError(err.response?.data?.error || "Account not found or security question not set.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAnswerSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+
+        try {
+            const response = await api.auth.verifySecurityAnswer(email, answer);
+            const { uid, token } = response.data;
+            // Redirect to the reset password page with the credentials
+            navigate(`/reset-password/${uid}/${token}`);
+        } catch (err) {
+            console.error("DEBUG: Answer verification failed", err);
+            setError(err.response?.data?.error || "Incorrect answer. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -39,59 +50,90 @@ const ForgotPassword = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 font-sans">
             <div className="bg-white p-8 rounded-lg shadow-md w-96 transform transition-all hover:scale-105">
-                <h2 className="text-green-600 text-3xl font-extrabold text-center mb-6 tracking-tight">Forgot Password</h2>
+                <h2 className="text-green-600 text-3xl font-extrabold text-center mb-6 tracking-tight">
+                    {step === 1 ? "Forgot Password" : "Identity Check"}
+                </h2>
+
                 <p className="text-gray-600 text-center mb-6 text-sm">
-                    Enter your email address and we'll help you reset your password.
+                    {step === 1
+                        ? "Enter your email address to find your account."
+                        : "Answer your security question to continue."}
                 </p>
 
-                {message && (
-                    <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-inner animate-fade-in">
-                        {message}
-                    </div>
-                )}
-
                 {error && (
-                    <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-inner animate-shake">
+                    <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-inner animate-shake text-sm">
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="group">
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all outline-none text-gray-700 placeholder-gray-400"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+                {step === 1 ? (
+                    <form onSubmit={handleEmailSubmit} className="space-y-6">
+                        <div className="group">
+                            <input
+                                type="email"
+                                placeholder="Enter your email"
+                                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all outline-none text-gray-700 placeholder-gray-400"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transform transition-all active:scale-95 ${loading
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:shadow-green-200"
-                            }`}
-                    >
-                        {loading ? (
-                            <span className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Processing...
-                            </span>
-                        ) : "Reset Password"}
-                    </button>
-                </form>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transform transition-all active:scale-95 ${loading
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                                }`}
+                        >
+                            {loading ? "Checking..." : "Continue"}
+                        </button>
+                    </form>
+                ) : (
+                    <form onSubmit={handleAnswerSubmit} className="space-y-6">
+                        <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 mb-4">
+                            <p className="text-xs text-gray-400 uppercase font-bold mb-1">Your Question:</p>
+                            <p className="text-gray-700 font-medium">{question}</p>
+                        </div>
 
-                <div className="mt-8 text-center">
+                        <div className="group">
+                            <input
+                                type="text"
+                                placeholder="Your answer"
+                                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all outline-none text-gray-700 placeholder-gray-400"
+                                value={answer}
+                                onChange={(e) => setAnswer(e.target.value)}
+                                required
+                                autoFocus
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full py-4 rounded-xl font-bold text-white shadow-lg transform transition-all active:scale-95 ${loading
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                                }`}
+                        >
+                            {loading ? "Verifying..." : "Verify Identity"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setStep(1)}
+                            className="w-full text-sm text-gray-500 hover:text-gray-700 text-center mt-2"
+                        >
+                            Change Email
+                        </button>
+                    </form>
+                )}
+
+                <div className="mt-8 text-center border-t pt-6">
                     <button
                         onClick={() => navigate("/login")}
-                        className="text-green-600 font-bold hover:text-green-700 transition-colors flex items-center justify-center mx-auto"
+                        className="text-green-600 font-bold hover:text-green-700 transition-colors flex items-center justify-center mx-auto text-sm"
                     >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

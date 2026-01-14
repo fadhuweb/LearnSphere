@@ -14,7 +14,8 @@ from .views import (
     AssignTeacherView, CourseListView, SuspendUserView, ReactivateUserView,
     LessonListCreateView, AvailableCoursesView, StudentCoursesView,
     AuditLogListView, TopicListView, QuizDetailView, QuizCreateView, QuizUpdateView, QuizDeleteView, LessonUpdateView,
-    PasswordResetView, PasswordResetConfirmView, get_quiz, get_teacher_course_detail
+    PasswordResetView, PasswordResetConfirmView, GetSecurityQuestionView, VerifySecurityAnswerView,
+    get_quiz, get_teacher_course_detail
 )
 
 router = DefaultRouter()
@@ -41,6 +42,8 @@ urlpatterns = [
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/password-reset/', PasswordResetView.as_view(), name='password-reset'),
     path('auth/password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    path('auth/security-question/', GetSecurityQuestionView.as_view(), name='get-security-question'),
+    path('auth/verify-security-answer/', VerifySecurityAnswerView.as_view(), name='verify-security-answer'),
     
     # Admin endpoints
     path('admin/users/', UserListView.as_view(), name='admin-user-list'),

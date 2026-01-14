@@ -64,6 +64,24 @@ const api = {
         },
       }
     ),
+    getSecurityQuestion: (email) => axios.post(
+      `${API_URL}/auth/security-question/`,
+      { email },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ),
+    verifySecurityAnswer: (email, answer) => axios.post(
+      `${API_URL}/auth/verify-security-answer/`,
+      { email, answer },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    ),
   },
   admin: {
     // User Management

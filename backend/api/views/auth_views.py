@@ -54,6 +54,13 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+    
+    def perform_update(self, serializer):
+        # Hash the security answer if it's being updated
+        if 'security_answer' in self.request.data:
+            from django.contrib.auth.hashers import make_password
+            serializer.validated_data['security_answer'] = make_password(self.request.data['security_answer'].lower().strip())
+        serializer.save()
 
 
 class UserListView(generics.ListAPIView):
@@ -211,17 +218,57 @@ class PasswordResetView(APIView):
             return Response({"error": "No user found with this email address."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Password reset error for email {email}: {str(e)}", exc_info=True)
-            # Check for common SMTP errors to give cleaner feedback
-            error_msg = str(e)
-            if "authentication failed" in error_msg.lower():
-                error_msg = "Mail server authentication failed. Please check your App Password."
-            elif "connection refused" in error_msg.lower():
-                error_msg = "Could not connect to the mail server. Please check SMTP settings."
+            return Response({"error": f"Failed to send reset email: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class GetSecurityQuestionView(APIView):
+    """View to get a user's security question by email."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email__iexact=email)
+            if not user.security_question:
+                return Response({"error": "No security question set for this account. Please contact an administrator."}, status=status.HTTP_400_BAD_REQUEST)
             
-            return Response({
-                "error": f"Failed to send reset email: {error_msg}",
-                "detail": "Please check the server logs for more information."
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"question": user.security_question}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "No user found with this email address."}, status=status.HTTP_404_NOT_FOUND)
+
+class VerifySecurityAnswerView(APIView):
+    """View to verify the security answer and return a reset token."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        answer = request.data.get('answer')
+        
+        if not email or not answer:
+            return Response({"error": "Email and answer are required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            user = User.objects.get(email__iexact=email)
+            if not user.security_answer:
+                return Response({"error": "Security information missing for this account."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            from django.contrib.auth.hashers import check_password
+            if check_password(answer.lower().strip(), user.security_answer):
+                # Correct answer! Generate a token
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                return Response({
+                    "uid": uid,
+                    "token": token,
+                    "message": "Answer verified! You can now reset your password."
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Incorrect security answer."}, status=status.HTTP_400_BAD_REQUEST)
+                
+        except User.DoesNotExist:
+            return Response({"error": "Invalid request."}, status=status.HTTP_404_NOT_FOUND)
 
 class PasswordResetConfirmView(APIView):
     """View to confirm password reset with a token."""
