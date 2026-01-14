@@ -17,7 +17,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password", "role"]
+        fields = ["id", "username", "email", "password", "role", "security_question", "security_answer"]
+        extra_kwargs = {
+            'security_answer': {'write_only': True}
+        }
 
     def validate_password(self, value):
         """Ensure password meets Django's security requirements"""
@@ -26,11 +29,20 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a user with hashed password and assign role properly."""
+        from django.contrib.auth.hashers import make_password
+        
+        # Hash security answer if provided
+        security_answer = validated_data.get("security_answer")
+        if security_answer:
+            validated_data["security_answer"] = make_password(security_answer.lower().strip())
+
         user = User.objects.create_user(
             username=validated_data["username"],
             email=validated_data["email"],
             password=validated_data["password"],
-            role=validated_data.get("role", "student")  # Ensure role assignment
+            role=validated_data.get("role", "student"),
+            security_question=validated_data.get("security_question"),
+            security_answer=validated_data.get("security_answer")
         )
         return user
 

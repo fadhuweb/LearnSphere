@@ -10,8 +10,21 @@ const Register = () => {
     username: "",
     email: "",
     password: "",
-    role: "student"
+    role: "student",
+    security_question: "",
+    security_answer: ""
   });
+
+  const securityQuestions = [
+    "What was the name of your first school?",
+    "What is your mother's maiden name?",
+    "What was the name of your first pet?",
+    "In what city were you born?",
+    "What was your favorite food as a child?",
+    "What is the name of your favorite book?",
+    "What was the make and model of your first car?",
+    "Where did you go on your first holiday?"
+  ];
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -157,6 +170,39 @@ const Register = () => {
                   <option value="teacher">Instructor Account</option>
                   <option value="admin">Administrator</option>
                 </select>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-100 flex flex-col gap-6">
+              <div className="space-y-2">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Security Question</label>
+                <div className="relative">
+                  <select
+                    name="security_question"
+                    value={userData.security_question}
+                    className="w-full px-4 py-4 bg-gray-50 border-2 border-transparent focus:border-green-500 outline-none rounded-2xl font-bold text-gray-700 transition-all shadow-sm appearance-none cursor-pointer"
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select a security question...</option>
+                    {securityQuestions.map((q, i) => (
+                      <option key={i} value={q}>{q}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Your Answer</label>
+                <input
+                  type="text"
+                  name="security_answer"
+                  placeholder="Keep it secret, keep it safe"
+                  className="w-full px-4 py-4 bg-gray-50 border-2 border-transparent focus:border-green-500 outline-none rounded-2xl font-bold text-gray-700 transition-all shadow-sm"
+                  onChange={handleChange}
+                  required
+                />
+                <p className="text-[10px] text-gray-400 font-bold ml-1 uppercase">Used if you ever forget your password</p>
               </div>
             </div>
 

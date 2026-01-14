@@ -15,6 +15,17 @@ const Profile = () => {
     const [securityAnswer, setSecurityAnswer] = useState('');
     const fileInputRef = useRef(null);
 
+    const securityQuestions = [
+        "What was the name of your first school?",
+        "What is your mother's maiden name?",
+        "What was the name of your first pet?",
+        "In what city were you born?",
+        "What was your favorite food as a child?",
+        "What is the name of your favorite book?",
+        "What was the make and model of your first car?",
+        "Where did you go on your first holiday?"
+    ];
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -133,13 +144,16 @@ const Profile = () => {
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-xs text-gray-500 mb-1">Security Question</label>
-                                    <input
-                                        type="text"
-                                        placeholder="e.g., What was your first pet's name?"
+                                    <select
                                         value={securityQuestion}
                                         onChange={(e) => setSecurityQuestion(e.target.value)}
-                                        className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                    />
+                                        className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500 font-medium"
+                                    >
+                                        <option value="">Select a security question...</option>
+                                        {securityQuestions.map((q, i) => (
+                                            <option key={i} value={q}>{q}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div>
                                     <label className="block text-xs text-gray-500 mb-1">Security Answer</label>
