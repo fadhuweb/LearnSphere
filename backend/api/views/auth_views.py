@@ -40,7 +40,7 @@ class RegisterView(APIView):
                     logger.warning(f"Failed to log registration action: {str(log_e)}")
                 
                 return Response(
-                    {"message": "Registration successful. Please wait for admin approval."},
+                    {"message": "Registration successful! You can now log in to your account."},
                     status=status.HTTP_201_CREATED
                 )
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
