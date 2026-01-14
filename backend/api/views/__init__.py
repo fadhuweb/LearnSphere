@@ -1,7 +1,8 @@
 from .auth_views import (
     RegisterView, LoginView, UserProfileView, UserListView,
     ApproveUserView, RemoveUserView, SuspendUserView, ReactivateUserView,
-    AuditLogListView, PasswordResetView, PasswordResetConfirmView
+    AuditLogListView, PasswordResetView, PasswordResetConfirmView,
+    GetSecurityQuestionView, VerifySecurityAnswerView
 )
 from .analytics_views import (
     StudentProgressView, TeacherProgressView, SyncProgressView,
