@@ -30,15 +30,23 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            log_action(None, f"New user registered: {user.username}")
-            return Response(
-                {"message": "Registration successful. Please wait for admin approval."},
-                status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = RegisterSerializer(data=request.data)
+            if serializer.is_valid():
+                user = serializer.save()
+                try:
+                    log_action(None, f"New user registered: {user.username}")
+                except Exception as log_e:
+                    logger.warning(f"Failed to log registration action: {str(log_e)}")
+                
+                return Response(
+                    {"message": "Registration successful. Please wait for admin approval."},
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.error(f"Registration error: {str(e)}", exc_info=True)
+            return Response({"error": f"Internal server error during registration: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class LoginView(TokenObtainPairView):
     """Login view that uses JWT tokens."""
