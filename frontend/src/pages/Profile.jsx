@@ -8,6 +8,7 @@ import { FaCamera, FaUser, FaEnvelope, FaIdBadge } from 'react-icons/fa';
 const Profile = () => {
     const { user, login } = useContext(AuthContext);
 
+    const [username, setUsername] = useState(user?.username || '');
     const [avatar, setAvatar] = useState(null);
     const [preview, setPreview] = useState(user?.avatar || null);
     const [loading, setLoading] = useState(false);
@@ -39,6 +40,7 @@ const Profile = () => {
         e.preventDefault();
 
         const formData = new FormData();
+        if (username !== user.username) formData.append('username', username);
         if (avatar) {
             formData.append('avatar', avatar);
         }
@@ -47,7 +49,7 @@ const Profile = () => {
         if (securityQuestion) formData.append('security_question', securityQuestion);
         if (securityAnswer) formData.append('security_answer', securityAnswer);
 
-        if (!avatar && !securityQuestion && !securityAnswer) return;
+        if (username === user.username && !avatar && !securityQuestion && !securityAnswer) return;
 
         setLoading(true);
         try {
@@ -114,28 +116,35 @@ const Profile = () => {
                             <p className="mt-2 text-sm text-gray-500">Click camera icon to change avatar</p>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <FaUser className="text-gray-400 mr-3" />
-                                <div>
-                                    <p className="text-xs text-gray-500">Username</p>
-                                    <p className="font-medium text-gray-800">{user.username}</p>
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Username</label>
+                                <div className="relative group">
+                                    <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+                                    <input
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        className="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 outline-none rounded-2xl font-bold text-gray-700 transition-all shadow-sm"
+                                        placeholder="Enter username"
+                                    />
                                 </div>
                             </div>
 
-                            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <FaEnvelope className="text-gray-400 mr-3" />
-                                <div>
-                                    <p className="text-xs text-gray-500">Email</p>
-                                    <p className="font-medium text-gray-800">{user.email}</p>
+                            <div className="flex items-center p-4 bg-gray-50 border border-gray-100 rounded-2xl">
+                                <FaEnvelope className="text-gray-400 mr-4" />
+                                <div className="flex-grow">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Email Address</p>
+                                    <p className="font-bold text-gray-700">{user.email}</p>
                                 </div>
+                                <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest">Verified</span>
                             </div>
 
-                            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-                                <FaIdBadge className="text-gray-400 mr-3" />
-                                <div>
-                                    <p className="text-xs text-gray-500">Role</p>
-                                    <p className="font-medium text-gray-800 capitalise">{user.role}</p>
+                            <div className="flex items-center p-4 bg-gray-50 border border-gray-100 rounded-2xl">
+                                <FaIdBadge className="text-gray-400 mr-4" />
+                                <div className="flex-grow">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Account Role</p>
+                                    <p className="font-bold text-gray-700 capitalize">{user.role}</p>
                                 </div>
                             </div>
                         </div>
@@ -193,10 +202,10 @@ const Profile = () => {
                         <div className="mt-8">
                             <button
                                 onClick={handleSubmit}
-                                disabled={loading || (!avatar && !securityQuestion && !securityAnswer)}
-                                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading || (!avatar && !securityQuestion && !securityAnswer) ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                disabled={loading || (username === user.username && !avatar && !securityQuestion && !securityAnswer)}
+                                className={`w-full flex justify-center py-4 px-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 active:scale-[0.98] transition-all ${loading || (username === user.username && !avatar && !securityQuestion && !securityAnswer) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                             >
-                                {loading ? 'Saving...' : 'Save All Changes'}
+                                {loading ? 'Processing...' : 'Save All Changes'}
                             </button>
                         </div>
                     </div>
