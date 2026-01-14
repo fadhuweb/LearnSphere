@@ -13,6 +13,7 @@ const Profile = () => {
     const [loading, setLoading] = useState(false);
     const [securityQuestion, setSecurityQuestion] = useState(user?.security_question || '');
     const [securityAnswer, setSecurityAnswer] = useState('');
+    const [showSecurity, setShowSecurity] = useState(false);
     const fileInputRef = useRef(null);
 
     const securityQuestions = [
@@ -140,33 +141,53 @@ const Profile = () => {
                         </div>
 
                         <div className="mt-8 border-t pt-6">
-                            <h3 className="text-sm font-semibold text-gray-900 mb-4">Security Settings</h3>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-xs text-gray-500 mb-1">Security Question</label>
-                                    <select
-                                        value={securityQuestion}
-                                        onChange={(e) => setSecurityQuestion(e.target.value)}
-                                        className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500 font-medium"
-                                    >
-                                        <option value="">Select a security question...</option>
-                                        {securityQuestions.map((q, i) => (
-                                            <option key={i} value={q}>{q}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-gray-500 mb-1">Security Answer</label>
-                                    <input
-                                        type="password"
-                                        placeholder="Keep it secret, keep it safe"
-                                        value={securityAnswer}
-                                        onChange={(e) => setSecurityAnswer(e.target.value)}
-                                        className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                    />
-                                    <p className="mt-1 text-xs text-gray-400">Used for password recovery if you forget your password.</p>
-                                </div>
-                            </div>
+                            {!showSecurity ? (
+                                <button
+                                    onClick={() => setShowSecurity(true)}
+                                    className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 flex items-center justify-between w-full"
+                                >
+                                    <span>Update Security Question</span>
+                                    <span className="text-xs font-normal text-gray-400 italic">(Set during registration)</span>
+                                </button>
+                            ) : (
+                                <>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-sm font-semibold text-gray-900">Security Settings</h3>
+                                        <button
+                                            onClick={() => setShowSecurity(false)}
+                                            className="text-xs text-gray-400 hover:text-gray-600"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">Security Question</label>
+                                            <select
+                                                value={securityQuestion}
+                                                onChange={(e) => setSecurityQuestion(e.target.value)}
+                                                className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500 font-medium"
+                                            >
+                                                <option value="">Select a security question...</option>
+                                                {securityQuestions.map((q, i) => (
+                                                    <option key={i} value={q}>{q}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">Security Answer</label>
+                                            <input
+                                                type="password"
+                                                placeholder="Enter new answer"
+                                                value={securityAnswer}
+                                                onChange={(e) => setSecurityAnswer(e.target.value)}
+                                                className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                            />
+                                            <p className="mt-1 text-xs text-gray-400">Leave answer blank if you only want to change the question.</p>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         <div className="mt-8">
